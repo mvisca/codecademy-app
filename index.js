@@ -1,36 +1,57 @@
+const { app, BrowserWindow, Menu } = require('electron');
+// const fs = require('fs');
+// var path = require('path');
 
-const { app, BrowserWindow } = require('electron')
+let win;
 
-// Global variable that holds the app window
-let win
+let menuTemplate = [
+  {
+    label: 'Session',
+    submenu: [
+      {
+        label: 'Login',
+        click() {
+          win.loadURL(
+            https://www.codecademy.com/login)
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Logout',
+        click() {
+          win.loadURL(
+            https://www.codecademy.com/sign_out)
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Exit',
+        click() {
+          app.quit()
+        }
+      }
+    ]
+  }
+];
 
 function createWindow() {
-
-  // Creating the browser window
   win = new BrowserWindow({
     width: 600,
-    height: 750,
+    height: 750
+  });
+  win.loadURL('https://www.codecademy.com/login');
+  win.on('closed', () => { win = null });
+  // Avoid new windows from _blak or other...
+  win.webContents.setWindowOpenHandler('new-window', (event, url) => {
+    event.preventDefault();
+    win.loadURL(url);
   })
-
-  // Load a redirecting url from
-  // login to the feed
-  win.loadURL(
-    'https://www.codecademy.com/login')
-
-  win.on('closed', () => {
-    win = null
-  })
-
-  // Prevent from spawning new windows
-  win.webContents.on('new-window', (event, url) => {
-
-    event.preventDefault()
-    win.loadURL(url)
-  })
+  // Build menu
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 }
 
-// Executing the createWindow function
-// when the app is ready
-app.on('ready', createWindow)
+app.on('ready', createWindow);
+
 
 // Based on the guide https://www.geeksforgeeks.org/create-a-geeksforgeeks-wrapper-application-using-electron/
